@@ -8,17 +8,16 @@ describe "Cart" do
         purch.addProduct(1, "Chocolate bar", "FOOD", 0.85, false)
 
         expect(purch.total).to eq(42.32)
-        expect(purch.basic_tax).to eq(1.5)
-        expect(purch.import_tax).to eq(0)
+        expect(purch.taxes).to eq(1.5)
     end
 
     it "2. Add items to cart and validate total and taxes (imported)" do
         purch = Cart.new
         purch.addProduct(2, "Books", "Book", 12.49, true)
         purch.addProduct(1, "Chocolate bar", "FOOD", 0.85, true)
-        import_taxes = 1.2 + 0.05
-        total = 2*12.49 + 1*0.85 + import_taxes
-        expect(purch.total).to eq(total.round(2))
-        expect(purch.import_tax.round(2)).to eq(import_taxes.round(2))
+        taxes = 1.20 + 0.05
+        total = 2*12.49 + 1*0.85 + taxes
+        expect(taxes.round(2)).to eq(purch.taxes.round(2))
+        expect(total.round(2)).to eq(purch.total.round(2))
     end
 end

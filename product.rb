@@ -1,18 +1,19 @@
 class Product
-    attr_accessor :product_name, :product_sale_price, :product_tax, :product_import_tax
-    def initialize(product_name, product_type, product_sale_price, product_is_imported)
-        @product_name = product_name
-        @product_type = product_type
-        @product_sale_price = product_sale_price
-        @product_is_imported = product_is_imported
-        @product_tax_percentaje = getProductTaxByType(product_type)
-        @product_tax = 0
-        @product_import_tax = 0
+    attr_accessor :name, :price, :taxes
+    def initialize(name, type, price, imported)
+        @name = name
+        @type = type
+        @price = price
+        @imported = imported
+        @taxes = 0
+        @tax_percentaje = getProductTaxByType(type)
         calculateProductTaxes
     end
 
-    def getProductTaxByType(product_type)
-		case product_type.upcase
+    private 
+
+    def getProductTaxByType(type)
+		case type.upcase
 			when "BOOK", "BOOKS", "FOOD", "MEDICAL", "MEDICINE"
 			return 0
 			else
@@ -21,12 +22,15 @@ class Product
 	end
 
     def calculateProductTaxes
-        if @product_tax_percentaje > 0
-            @product_tax = roundTax(@product_tax_percentaje * @product_sale_price / 100.00.to_f)
-          end
-          if @product_is_imported
-            @product_import_tax = roundTax(@product_sale_price * 5.00 / 100.00.to_f)
-          end
+        base_tax = 0
+        import_tax = 0
+        if @tax_percentaje > 0
+          base_tax = @tax_percentaje * @price / 100.00.to_f
+        end
+        if @imported
+          import_tax = @price * 5.00 / 100.00.to_f
+        end
+        @taxes = roundTax(base_tax + import_tax)
     end
 
     def roundTax(tax)
