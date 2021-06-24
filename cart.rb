@@ -11,23 +11,24 @@ class Cart
     
 	def addProduct(quantity, name, type, price, imported)
 	  prod = Product.new(name, type, price, imported)
-  
-      cart_lines.push Cart_Line.new(quantity, prod)
-	  @taxes += quantity*prod.taxes
-	  @total += quantity*(price + prod.taxes)
+	  line = Cart_Line.new(quantity, prod)
+      cart_lines.push line
+	  @taxes += line.taxes
+	  @total += line.total
     end
 	
-	def CloseInvoice()
-		if @cart_lines.nil? 
+	def closeInvoice()
+		if @cart_lines.empty?
 			puts "There is no products in your cart - $ 0"
-		elsif @cart_lines.respond_to?("each")
-			@cart_lines.each do |prod|
-				puts "#{prod.quantity} #{prod.product.name}: $ #{ (prod.quantity*(prod.product.price + prod.product.taxes)).round(2)}"
-			end
-			puts "-----------------------"
-			puts "Sales Taxes: #{taxes.round(2)}"
-			puts "Total $ #{total.round(2)}"
+			return
 		end
+
+		@cart_lines.each do |line|
+			puts "#{line.quantity} #{line.product.name}: $ #{line.total.round(2)}"
+		end
+		puts "-----------------------"
+		puts "Sales Taxes: #{taxes.round(2)}"
+		puts "Total $ #{total.round(2)}"
 	end
 end
 
@@ -41,7 +42,7 @@ if __FILE__ == $0
   purch.addProduct(1, "Music CD", "Music", 14.99, false)
   purch.addProduct(1, "Chocolate bar", "FOOD", 0.85, false)
   
-  purch.CloseInvoice()
+  purch.closeInvoice()
   
   puts ""
   puts "-> INPUT 2 "
@@ -51,7 +52,7 @@ if __FILE__ == $0
   purch.addProduct(1, "Box of chocolates", "FOOD", 10.00, true)
   purch.addProduct(1, "Bottle of perfume", "OTHER", 47.50, true)
   
-  purch.CloseInvoice()
+  purch.closeInvoice()
   
   puts ""
   puts "-> INPUT 3 "
@@ -63,11 +64,21 @@ if __FILE__ == $0
   purch.addProduct(1, "Pack of headache pills", "MEDICINE", 9.75, false)
   purch.addProduct(3, "Boxes of chocolate", "FOOD", 11.25, true)
   
-  purch.CloseInvoice()
+  purch.closeInvoice()
 
   puts ""
+  puts "-> INPUT 4 "
+  puts ""
+
   purch = Cart.new
   purch.addProduct(2, "Books", "Book", 12.49, true)
   purch.addProduct(1, "Chocolate bar", "FOOD", 0.85, true)
-  purch.CloseInvoice()
+  purch.closeInvoice()
+
+  puts ""
+  puts "-> EMPTY CART"
+  puts ""
+
+  purch = Cart.new
+  purch.closeInvoice()
 end
