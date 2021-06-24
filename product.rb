@@ -13,12 +13,8 @@ class Product
     private 
 
     def getProductTaxByType(type)
-		case type.upcase
-			when "BOOK", "BOOKS", "FOOD", "MEDICAL", "MEDICINE"
-			return 0
-			else
-			return 10
-		end
+        return 0 if ["BOOK", "BOOKS", "FOOD", "MEDICAL", "MEDICINE"].include? (type.upcase)
+        10
 	end
 
     def calculateProductTaxes

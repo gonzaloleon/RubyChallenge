@@ -65,20 +65,4 @@ if __FILE__ == $0
   purch.addProduct(3, "Boxes of chocolate", "FOOD", 11.25, true)
   
   purch.closeInvoice()
-
-  puts ""
-  puts "-> INPUT 4 "
-  puts ""
-
-  purch = Cart.new
-  purch.addProduct(2, "Books", "Book", 12.49, true)
-  purch.addProduct(1, "Chocolate bar", "FOOD", 0.85, true)
-  purch.closeInvoice()
-
-  puts ""
-  puts "-> EMPTY CART"
-  puts ""
-
-  purch = Cart.new
-  purch.closeInvoice()
 end
