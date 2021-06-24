@@ -2,7 +2,7 @@ require './cart.rb'
 
 describe "Cart" do
     it "1. Add items to cart and validate total and taxes (without imported)" do
-        purch = Purchase.new
+        purch = Cart.new
         purch.addProduct(2, "Books", "Book", 12.49, false)
         purch.addProduct(1, "Music CD", "Music", 14.99, false)
         purch.addProduct(1, "Chocolate bar", "FOOD", 0.85, false)
@@ -13,7 +13,7 @@ describe "Cart" do
     end
 
     it "2. Add items to cart and validate total and taxes (imported)" do
-        purch = Purchase.new
+        purch = Cart.new
         purch.addProduct(2, "Books", "Book", 12.49, true)
         purch.addProduct(1, "Chocolate bar", "FOOD", 0.85, true)
         import_taxes = 1.2 + 0.05

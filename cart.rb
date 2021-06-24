@@ -1,18 +1,11 @@
-#!/usr/bin/env ruby
-class Float
+require "./product.rb"
+require "./cart_line.rb"
 
-  def round_tax
-    (self / 0.05.to_f).round * 0.05
-  end
-
-end
-
-class Purchase
-	attr_accessor :products, :basic_tax, :import_tax, :total
-	Product = Struct.new(:product_name, :product_type, :product_tax_percentaje, :product_tax, :product_sale_price, :product_is_imported, :product_imported_tax)
-	Purchase_Line = Struct.new(:quantity, :Product)
+class Cart
+	attr_accessor :cart_line, :basic_tax, :import_tax, :total
+	
 	def initialize()
-		@products = []
+		@cart_line = []
 		@total = 0
 		@import_tax = 0
 		@basic_tax = 0
@@ -28,34 +21,32 @@ class Purchase
 	end
 	
 	def addProduct(quantity, product_name, product_type, product_sale_price, product_imported)
+	  prod = Product.new(product_name, product_type, product_sale_price, product_imported)
+
 	  product_tax_percentaje = getProductTypeTax(product_type)
-	  product_tax = 0
-	  product_import_tax = 0
-	  product_sale_price = product_sale_price.to_f
-	  if product_tax_percentaje > 0
-	    product_tax = quantity * (product_tax_percentaje * product_sale_price / 100.00.to_f).round_tax
-	  end
-	  if product_imported
-		product_import_tax = quantity * (product_sale_price * 5.00 / 100.00.to_f).round_tax
-	  end
-	  
-      products.push Purchase_Line.new(quantity, Product.new(product_name, product_type, product_tax_percentaje, product_tax, product_sale_price, product_imported, product_import_tax))
-	  
-	  if product_imported
-		@import_tax += product_import_tax
-	  end
-	  if product_tax_percentaje > 0
+	  product_tax = prod.product_tax
+	  product_import_tax = prod.product_import_tax
+	  product_sale_price = product_sale_price
+	  if product_tax > 0
+	    product_tax = quantity * product_tax
 		@basic_tax += product_tax
 	  end
+	  if product_imported && product_import_tax > 0
+		product_import_tax = quantity * product_import_tax
+		@import_tax += product_import_tax
+	  end
+	  
+      cart_line.push Cart_Line.new(quantity, prod)
+	  
 	  @total += quantity*product_sale_price + product_tax + product_import_tax
     end
 	
 	def CloseInvoice()
-		if @products.nil? 
+		if @cart_line.nil? 
 			puts "There is no products in your cart - $ 0"
-		elsif @products.respond_to?("each")
-			@products.each do |prod|
-				puts "#{prod.quantity} #{prod.Product.product_name}: $ #{ (prod.quantity*prod.Product.product_sale_price + prod.Product.product_tax + prod.Product.product_imported_tax).round(2)}"
+		elsif @cart_line.respond_to?("each")
+			@cart_line.each do |prod|
+				puts "#{prod.quantity} #{prod.product.product_name}: $ #{ (prod.quantity*prod.product.product_sale_price + prod.product.product_tax + prod.product.product_import_tax).round(2)}"
 			end
 			puts "-----------------------"
 			puts "Sales Taxes: #{(import_tax + basic_tax).round(2)}"
@@ -72,7 +63,7 @@ if __FILE__ == $0
   puts "-> INPUT 1 "
   puts ""
   
-  purch = Purchase.new
+  purch = Cart.new
   purch.addProduct(2, "Books", "Book", 12.49, false)
   purch.addProduct(1, "Music CD", "Music", 14.99, false)
   purch.addProduct(1, "Chocolate bar", "FOOD", 0.85, false)
@@ -83,7 +74,7 @@ if __FILE__ == $0
   puts "-> INPUT 2 "
   puts ""
   
-  purch = Purchase.new
+  purch = Cart.new
   purch.addProduct(1, "Box of chocolates", "FOOD", 10.00, true)
   purch.addProduct(1, "Bottle of perfume", "OTHER", 47.50, true)
   
@@ -93,7 +84,7 @@ if __FILE__ == $0
   puts "-> INPUT 3 "
   puts ""
   
-  purch = Purchase.new
+  purch = Cart.new
   purch.addProduct(1, "Bottle of perfume A", "Others", 27.99, true)
   purch.addProduct(1, "Bottle of perfume B", "Others", 18.99, false)
   purch.addProduct(1, "Pack of headache pills", "MEDICINE", 9.75, false)
